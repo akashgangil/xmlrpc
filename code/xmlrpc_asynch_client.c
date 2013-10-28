@@ -32,7 +32,7 @@ die_if_fault_occurred(xmlrpc_env * const envP) {
 
 
 static void 
-handle_sample_add_response(const char *   const serverUrl,
+handle_sample_status_response(const char *   const serverUrl,
                            const char *   const methodName,
                            xmlrpc_value * const paramArrayP,
                            void *         const user_data,
@@ -73,7 +73,7 @@ main(int           const argc,
      const char ** const argv) {
 
     const char * const serverUrl = "http://localhost:8080/RPC2";
-    const char * const methodName = "sample.add";
+    const char * const methodName = "status";
 
     xmlrpc_env env;
     xmlrpc_client * clientP;
@@ -102,7 +102,7 @@ main(int           const argc,
 
         /* request the remote procedure call */
         xmlrpc_client_start_rpcf(&env, clientP, serverUrl, methodName,
-                                  handle_sample_add_response, NULL,
+                                  handle_sample_status_response, NULL,
                                   "(ii)", (xmlrpc_int32) 5, adder);
         die_if_fault_occurred(&env);
     }

@@ -43,7 +43,7 @@
 
 
 static xmlrpc_value *
-sample_add(xmlrpc_env *   const envP,
+status(xmlrpc_env *   const envP,
            xmlrpc_value * const paramArrayP,
            void *         const serverInfo,
            void *         const channelInfo) {
@@ -75,8 +75,8 @@ main(int           const argc,
      const char ** const argv) {
 
     struct xmlrpc_method_info3 const methodInfo = {
-        /* .methodName     = */ "sample.add",
-        /* .methodFunction = */ &sample_add,
+        /* .methodName     = */ "status",
+        /* .methodFunction = */ &status,
     };
     xmlrpc_server_abyss_parms serverparm;
     xmlrpc_registry * registryP;
