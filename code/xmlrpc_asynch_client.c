@@ -40,7 +40,7 @@ handle_sample_status_response(const char *   const serverUrl,
                            xmlrpc_value * const resultP) {
 
     xmlrpc_env env;
-    xmlrpc_int addend, adder;
+    xmlrpc_int server_id;
     
     /* Initialize our error environment variable */
     xmlrpc_env_init(&env);
@@ -48,21 +48,21 @@ handle_sample_status_response(const char *   const serverUrl,
     /* Our first four arguments provide helpful context.  Let's grab the
        addends from our parameter array. 
     */
-    xmlrpc_decompose_value(&env, paramArrayP, "(ii)", &addend, &adder);
+    xmlrpc_decompose_value(&env, paramArrayP, "(i)", &server_id);
     die_if_fault_occurred(&env);
 
-    printf("RPC with method '%s' at URL '%s' to add %d and %d "
-           "has completed\n", methodName, serverUrl, addend, adder);
+    printf("RPC with method '%s' at URL '%s' and server id %d "
+           "has completed\n", methodName, serverUrl, server_id);
     
     if (faultP->fault_occurred)
         printf("The RPC failed.  %s\n", faultP->fault_string);
     else {
-        xmlrpc_int sum;
+        xmlrpc_int status;
 
-        xmlrpc_read_int(&env, resultP, &sum);
+        xmlrpc_read_int(&env, resultP, &status);
         die_if_fault_occurred(&env);
 
-        printf("The sum is  %d\n", sum);
+        printf("The status is  %d\n", status);
     }
 }
 
@@ -77,7 +77,7 @@ main(int           const argc,
 
     xmlrpc_env env;
     xmlrpc_client * clientP;
-    xmlrpc_int adder;
+    xmlrpc_int server_id;
 
     if (argc-1 > 0) {
         fprintf(stderr, "This program has no arguments\n");
@@ -95,17 +95,17 @@ main(int           const argc,
                          &clientP);
     die_if_fault_occurred(&env);
 
-    for (adder = 0; adder < 3; ++adder) {
-        printf("Making XMLRPC call to server url '%s' method '%s' "
-               "to request the sum "
-               "of 5 and %d...\n", serverUrl, methodName, adder);
 
-        /* request the remote procedure call */
-        xmlrpc_client_start_rpcf(&env, clientP, serverUrl, methodName,
-                                  handle_sample_status_response, NULL,
-                                  "(ii)", (xmlrpc_int32) 5, adder);
-        die_if_fault_occurred(&env);
-    }
+    printf("Making XMLRPC call to server url '%s' method '%s' "
+           "and server_id '%s'\n", serverUrl, methodName, server_id);
+
+    server_id = 1;
+    /* request the remote procedure call */
+    xmlrpc_client_start_rpcf(&env, clientP, serverUrl, methodName,
+                             handle_sample_status_response, NULL,
+                             "(i)", server_id);
+    die_if_fault_occurred(&env);
+
     
     printf("RPCs all requested.  Waiting for & handling responses...\n");
 

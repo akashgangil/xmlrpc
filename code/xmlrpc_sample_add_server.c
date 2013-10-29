@@ -48,24 +48,20 @@ status(xmlrpc_env *   const envP,
            void *         const serverInfo,
            void *         const channelInfo) {
 
-    xmlrpc_int32 x, y, z;
+    xmlrpc_int32 server_id, status;
 
     /* Parse our argument array. */
-    xmlrpc_decompose_value(envP, paramArrayP, "(ii)", &x, &y);
+    xmlrpc_decompose_value(envP, paramArrayP, "(i)", &server_id);
     if (envP->fault_occurred)
         return NULL;
 
-    /* Add our two numbers. */
-    z = x + y;
+    printf("The server_id is %d\n", server_id);
 
-    /* Sometimes, make it look hard (so client can see what it's like
-       to do an RPC that takes a while).
-    */
-    if (y == 1)
-        SLEEP(3);
+    status = 1;
+    printf("The status is %d\n", status);
 
     /* Return our result. */
-    return xmlrpc_build_value(envP, "i", z);
+    return xmlrpc_build_value(envP, "i", status);
 }
 
 
