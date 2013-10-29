@@ -35,13 +35,6 @@
 #include "config.h"  /* information about this build environment */
 
 
-#ifdef WIN32
-  #define SLEEP(seconds) SleepEx(seconds * 1000, 1);
-#else
-  #define SLEEP(seconds) sleep(seconds);
-#endif
-
-
 static xmlrpc_value *
 status(xmlrpc_env *   const envP,
            xmlrpc_value * const paramArrayP,
@@ -63,7 +56,6 @@ status(xmlrpc_env *   const envP,
     /* Return our result. */
     return xmlrpc_build_value(envP, "i", status);
 }
-
 
 
 int 

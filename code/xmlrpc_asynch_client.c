@@ -29,8 +29,6 @@ die_if_fault_occurred(xmlrpc_env * const envP) {
     }
 }
 
-
-
 static void 
 handle_sample_status_response(const char *   const serverUrl,
                            const char *   const methodName,
