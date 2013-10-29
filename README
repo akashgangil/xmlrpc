@@ -1,3 +1,4 @@
+Set up:
 $ cd xmlrpc-c-1.25.26
 $ ./configure --prefix=../rpc
 $ make
@@ -5,3 +6,17 @@ $ make install
 $ cd ../code
 $ make
 $ export LD_LIBRARY_PATH=../rpc/lib
+
+If something breaks, change XMLRPC_C_CONFIG in your Makefile.
+
+Run:
+Server - 
+$ ./xmlrpc_sample_add_server 8080 &
+$ ./xmlrpc_sample_add_server 8081 &
+$ ./xmlrpc_sample_add_server 8082 &
+
+Sync Client - 
+$ ./xmlrpc_sample_add_client
+
+Async Client -
+$ ./xmlrpc_asynch_client
