@@ -18,7 +18,7 @@
 #define NAME "Xmlrpc-c Test Client"
 #define VERSION "1.0"
 
-static void 
+static void
 dieIfFaultOccurred (xmlrpc_env * const envP) {
     if (envP->fault_occurred) {
         fprintf(stderr, "ERROR: %s (%d)\n",
@@ -29,15 +29,15 @@ dieIfFaultOccurred (xmlrpc_env * const envP) {
 
 
 
-int 
-main(int           const argc, 
+int
+main(int           const argc,
      const char ** const argv) {
 
     xmlrpc_env env;
     xmlrpc_value * resultP;
-    xmlrpc_int32 sum;
+    xmlrpc_int32 status, server_id;
     const char * const serverUrl = "http://localhost:8080/RPC2";
-    const char * const methodName = "sample.add";
+    const char * const methodName = "status";
 
     if (argc-1 > 0) {
         fprintf(stderr, "This program has no arguments\n");
@@ -51,29 +51,30 @@ main(int           const argc,
     xmlrpc_client_init2(&env, XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION, NULL, 0);
     dieIfFaultOccurred(&env);
 
+    /* set the server id */
+    server_id = 1;
+
     printf("Making XMLRPC call to server url '%s' method '%s' "
-           "to request the sum "
-           "of 5 and 7...\n", serverUrl, methodName);
+           "and server id is %d\n", serverUrl, methodName, server_id);
 
     /* Make the remote procedure call */
     resultP = xmlrpc_client_call(&env, serverUrl, methodName,
-                                 "(ii)", (xmlrpc_int32) 5, (xmlrpc_int32) 7);
+                                 "(i)", server_id);
     dieIfFaultOccurred(&env);
-    
+
     /* Get our sum and print it out. */
-    xmlrpc_read_int(&env, resultP, &sum);
+    xmlrpc_read_int(&env, resultP, &status);
     dieIfFaultOccurred(&env);
-    printf("The sum is %d\n", sum);
-    
+    printf("The status is %d\n", status);
+
     /* Dispose of our result value. */
     xmlrpc_DECREF(resultP);
 
     /* Clean up our error-handling environment. */
     xmlrpc_env_clean(&env);
-    
+
     /* Shutdown our XML-RPC client library. */
     xmlrpc_client_cleanup();
 
     return 0;
 }
-
