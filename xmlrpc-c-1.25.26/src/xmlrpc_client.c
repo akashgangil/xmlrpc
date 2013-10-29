@@ -1111,6 +1111,7 @@ void
 xmlrpc_client_start_rpcf(xmlrpc_env *    const envP,
                          xmlrpc_client * const clientP,
                          const char *    const serverUrl,
+                         const int semantic,
                          const char *    const methodName,
                          xmlrpc_response_handler responseHandler,
                          void *          const userHandle,

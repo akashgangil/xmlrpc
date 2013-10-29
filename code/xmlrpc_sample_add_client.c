@@ -18,6 +18,16 @@
 #define NAME "Xmlrpc-c Test Client"
 #define VERSION "1.0"
 
+#define BUSY 0
+#define IDLE 1
+#define MOST_BUSY 2
+#define MOST_IDLE 3
+#define RPC_FAILURE 4
+
+#define ANY 0
+#define MAJORITY 1
+#define ALL 2
+
 static void
 dieIfFaultOccurred (xmlrpc_env * const envP) {
     if (envP->fault_occurred) {
@@ -39,7 +49,7 @@ main(int           const argc,
     
     const char * const serverUrl = "http://localhost:8080/RPC2";
     const char * const methodName = "status";
-    const int semantic = 1;
+    const int semantic = ALL;
 
     if (argc-1 > 0) {
         fprintf(stderr, "This program has no arguments\n");
@@ -64,7 +74,7 @@ main(int           const argc,
                                  "(i)", server_id);
     dieIfFaultOccurred(&env);
 
-    /* Get our sum and print it out. */
+    /* Get our status and print it out. */
     xmlrpc_read_int(&env, resultP, &status);
     dieIfFaultOccurred(&env);
     printf("[CLIENT] The status is %d\n", status);

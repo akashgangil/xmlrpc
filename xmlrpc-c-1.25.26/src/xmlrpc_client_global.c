@@ -9,6 +9,16 @@
 #include <xmlrpc-c/client_int.h>
 #include <xmlrpc-c/client_global.h>
 
+#define BUSY 0
+#define IDLE 1
+#define MOST_BUSY 2
+#define MOST_IDLE 3
+#define RPC_FAILURE 4
+
+#define ANY 0
+#define MAJORITY 1
+#define ALL 2
+
 /*=========================================================================
    Global Client
 =========================================================================*/
@@ -17,7 +27,7 @@ static struct xmlrpc_client * globalClientP;
 static bool globalClientExists = false;
 
 
-void 
+void
 xmlrpc_client_init2(xmlrpc_env *                      const envP,
                     int                               const flags,
                     const char *                      const appname,
@@ -60,7 +70,7 @@ xmlrpc_client_init(int          const flags,
     struct xmlrpc_clientparms clientparms;
 
     /* As our interface does not allow for failure, we just fail silently ! */
-    
+
     xmlrpc_env env;
     xmlrpc_env_init(&env);
 
@@ -76,7 +86,7 @@ xmlrpc_client_init(int          const flags,
 
 
 
-void 
+void
 xmlrpc_client_cleanup() {
 /*----------------------------------------------------------------------------
    This function is not thread-safe
@@ -108,7 +118,7 @@ validateGlobalClientExists(xmlrpc_env * const envP) {
 void
 xmlrpc_client_transport_call(
     xmlrpc_env *               const envP,
-    void *                     const reserved ATTR_UNUSED, 
+    void *                     const reserved ATTR_UNUSED,
         /* for client handle */
     const xmlrpc_server_info * const serverP,
     xmlrpc_mem_block *         const callXmlP,
@@ -122,14 +132,26 @@ xmlrpc_client_transport_call(
 
 
 
-xmlrpc_value * 
+xmlrpc_value *
 xmlrpc_client_call(xmlrpc_env * const envP,
                    const char * const serverUrl,
+                   const int semantic,
                    const char * const methodName,
                    const char * const format,
                    ...) {
 
+    int i, busy_ctr, idle_ctr;
     xmlrpc_value * resultP;
+    xmlrpc_int32 status;
+    xmlrpc_int32 result;
+
+    const char * urls[3];
+    urls[0] = "http://localhost:8080/RPC2";
+    urls[1] = "http://localhost:8081/RPC2";
+    urls[2] = "http://localhost:8082/RPC2";
+
+    busy_ctr = 0;
+    idle_ctr = 0;
 
     validateGlobalClientExists(envP);
 
@@ -137,9 +159,59 @@ xmlrpc_client_call(xmlrpc_env * const envP,
         va_list args;
 
         va_start(args, format);
-    
-        xmlrpc_client_call2f_va(envP, globalClientP, serverUrl,
-                                methodName, format, &resultP, args);
+
+        for(i = 0; i < 3; i++){
+            xmlrpc_client_call2f_va(envP, globalClientP, urls[i],
+                                    methodName, format, &resultP, args);
+
+            xmlrpc_read_int(envP, resultP, &status);
+            printf("[XMLRPC LIB] The status is %d\n", status);
+            printf("[XMLRPC LIB] The semantic is %d\n", semantic);
+
+            switch(semantic) {
+            case ANY: return resultP; break;
+
+            case MAJORITY: {
+                /* increment counters based on status */
+                if (status == BUSY) {busy_ctr++;}
+                else if (status == IDLE) {idle_ctr++;}
+                else {printf("[XMLRPC LIB] The status(%d) is wrong.", status);}
+
+                /* return correct status */
+                if (busy_ctr > 1) {
+                    return xmlrpc_build_value(envP, "i", BUSY);
+                }
+                else if (idle_ctr > 1) {
+                    return xmlrpc_build_value(envP, "i", IDLE);
+                }
+                break;
+            }
+
+            case ALL: {
+                /* increment counters based on status */
+                if (status == BUSY) {busy_ctr++;}
+                else if (status == IDLE) {idle_ctr++;}
+                else {printf("[XMLRPC LIB] The status(%d) is wrong.", status);}
+
+                /* return correct status */
+                if (busy_ctr == 1) {
+                    return xmlrpc_build_value(envP, "i", MOST_BUSY);
+                }
+                else if (idle_ctr == 1) {
+                    return xmlrpc_build_value(envP, "i", MOST_IDLE);
+                }
+                else if (busy_ctr == 2) {
+                    return xmlrpc_build_value(envP, "i", BUSY);
+                }
+                else if (idle_ctr == 2) {
+                    return xmlrpc_build_value(envP, "i", IDLE);
+                }
+                break;
+            }
+
+            default: break;
+            }
+        }
 
         va_end(args);
     }
@@ -148,11 +220,11 @@ xmlrpc_client_call(xmlrpc_env * const envP,
 
 
 
-xmlrpc_value * 
+xmlrpc_value *
 xmlrpc_client_call_server(xmlrpc_env *               const envP,
                           const xmlrpc_server_info * const serverInfoP,
                           const char *               const methodName,
-                          const char *               const format, 
+                          const char *               const format,
                           ...) {
 
     xmlrpc_value * resultP;
@@ -194,7 +266,7 @@ xmlrpc_client_call_server_params(
 
 
 
-xmlrpc_value * 
+xmlrpc_value *
 xmlrpc_client_call_params(xmlrpc_env *   const envP,
                           const char *   const serverUrl,
                           const char *   const methodName,
@@ -208,21 +280,21 @@ xmlrpc_client_call_params(xmlrpc_env *   const envP,
         xmlrpc_server_info * serverInfoP;
 
         serverInfoP = xmlrpc_server_info_new(envP, serverUrl);
-        
+
         if (!envP->fault_occurred) {
             xmlrpc_client_call2(envP, globalClientP,
                                 serverInfoP, methodName, paramArrayP,
                                 &resultP);
-            
+
             xmlrpc_server_info_free(serverInfoP);
         }
     }
     return resultP;
-}                            
+}
 
 
 
-void 
+void
 xmlrpc_client_call_server_asynch_params(
     xmlrpc_server_info * const serverInfoP,
     const char *         const methodName,
@@ -257,8 +329,9 @@ xmlrpc_client_call_server_asynch_params(
 
 
 
-void 
+void
 xmlrpc_client_call_asynch(const char * const serverUrl,
+                          const int semantic,
                           const char * const methodName,
                           xmlrpc_response_handler responseHandler,
                           void *       const userData,
@@ -275,7 +348,7 @@ xmlrpc_client_call_asynch(const char * const serverUrl,
         va_list args;
 
         va_start(args, format);
-    
+
         xmlrpc_client_start_rpcf_va(&env, globalClientP,
                                     serverUrl, methodName,
                                     responseHandler, userData,
@@ -307,7 +380,7 @@ xmlrpc_client_call_asynch_params(const char *   const serverUrl,
     if (!env.fault_occurred) {
         xmlrpc_client_call_server_asynch_params(
             serverInfoP, methodName, responseHandler, userData, paramArrayP);
-        
+
         xmlrpc_server_info_free(serverInfoP);
     }
     if (env.fault_occurred)
@@ -318,7 +391,7 @@ xmlrpc_client_call_asynch_params(const char *   const serverUrl,
 
 
 
-void 
+void
 xmlrpc_client_call_server_asynch(xmlrpc_server_info * const serverInfoP,
                                  const char *         const methodName,
                                  xmlrpc_response_handler    responseHandler,
@@ -332,7 +405,7 @@ xmlrpc_client_call_server_asynch(xmlrpc_server_info * const serverInfoP,
 
     if (!env.fault_occurred) {
         va_list args;
-    
+
         xmlrpc_env_init(&env);
 
         va_start(args, format);
@@ -352,7 +425,7 @@ xmlrpc_client_call_server_asynch(xmlrpc_server_info * const serverInfoP,
 
 
 
-void 
+void
 xmlrpc_client_event_loop_finish_asynch(void) {
 
     XMLRPC_ASSERT(globalClientExists);
@@ -361,7 +434,7 @@ xmlrpc_client_event_loop_finish_asynch(void) {
 
 
 
-void 
+void
 xmlrpc_client_event_loop_finish_asynch_timeout(
     unsigned long const milliseconds) {
 
