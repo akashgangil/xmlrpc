@@ -216,8 +216,8 @@ xmlrpc_client_call(xmlrpc_env * const envP,
         else if (idle_ctr == 3) {
             printf("[XMLRPC LIB]The status is IDLE\n");
             return xmlrpc_build_value(envP, "i", IDLE);
-        } 
-       
+        }
+
         va_end(args);
     }
     return resultP;
@@ -342,7 +342,6 @@ xmlrpc_client_call_asynch(const char * const serverUrl,
                           void *       const userData,
                           const char * const format,
                           ...) {
-
     xmlrpc_env env;
 
     xmlrpc_env_init(&env);
@@ -354,11 +353,10 @@ xmlrpc_client_call_asynch(const char * const serverUrl,
 
         va_start(args, format);
 
-        xmlrpc_client_start_rpcf_va(&env, globalClientP,
+        xmlrpc_client_start_rpcf(&env, globalClientP,
                                     serverUrl, methodName,
                                     responseHandler, userData,
                                     format, args);
-
         va_end(args);
     }
     if (env.fault_occurred)
