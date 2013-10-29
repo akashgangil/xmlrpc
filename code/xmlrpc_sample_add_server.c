@@ -22,6 +22,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+
 #ifdef WIN32
 #  include <windows.h>
 #else
@@ -50,7 +52,8 @@ status(xmlrpc_env *   const envP,
 
     printf("The server_id is %d\n", server_id);
 
-    status = 1;
+
+    status = (xmlrpc_int32) (rand() % 2);
     printf("[SERVER] The status is %d\n", status);
 
     /* Return our result. */
@@ -58,8 +61,8 @@ status(xmlrpc_env *   const envP,
 }
 
 
-int 
-main(int           const argc, 
+int
+main(int           const argc,
      const char ** const argv) {
 
     struct xmlrpc_method_info3 const methodInfo = {
@@ -70,6 +73,8 @@ main(int           const argc,
     xmlrpc_registry * registryP;
     xmlrpc_env env;
 
+    srand(time(NULL));
+
     if (argc-1 != 1) {
         fprintf(stderr, "You must specify 1 argument:  The TCP port "
                 "number on which the server will accept connections "
@@ -77,7 +82,7 @@ main(int           const argc,
                 "You specified %d arguments.\n",  argc-1);
         exit(1);
     }
-    
+
     xmlrpc_env_init(&env);
 
     registryP = xmlrpc_registry_new(&env);
@@ -86,7 +91,7 @@ main(int           const argc,
 
     /* In the modern form of the Abyss API, we supply parameters in memory
        like a normal API.  We select the modern form by setting
-       config_file_name to NULL: 
+       config_file_name to NULL:
     */
     serverparm.config_file_name = NULL;
     serverparm.registryP        = registryP;

@@ -193,19 +193,6 @@ xmlrpc_client_call(xmlrpc_env * const envP,
                 else if (status == IDLE) {idle_ctr++;}
                 else {printf("[XMLRPC LIB] The status(%d) is wrong.", status);}
 
-                /* return correct status */
-                if (busy_ctr == 1) {
-                    return xmlrpc_build_value(envP, "i", MOST_BUSY);
-                }
-                else if (idle_ctr == 1) {
-                    return xmlrpc_build_value(envP, "i", MOST_IDLE);
-                }
-                else if (busy_ctr == 2) {
-                    return xmlrpc_build_value(envP, "i", BUSY);
-                }
-                else if (idle_ctr == 2) {
-                    return xmlrpc_build_value(envP, "i", IDLE);
-                }
                 break;
             }
 
@@ -213,6 +200,24 @@ xmlrpc_client_call(xmlrpc_env * const envP,
             }
         }
 
+        /* for ALL semantic, return correct status */
+        if (busy_ctr == 2) {
+            printf("[XMLRPC LIB] The status is MOST_BUSY\n");
+            return xmlrpc_build_value(envP, "i", MOST_BUSY);
+        }
+        else if (idle_ctr == 2) {
+            printf("[XMLRPC LIB] The status is MOST_IDLE\n");
+            return xmlrpc_build_value(envP, "i", MOST_IDLE);
+        }
+        else if (busy_ctr == 3) {
+            printf("[XMLRPC LIB] The status is BUSY\n");
+            return xmlrpc_build_value(envP, "i", BUSY);
+        }
+        else if (idle_ctr == 3) {
+            printf("[XMLRPC LIB]The status is IDLE\n");
+            return xmlrpc_build_value(envP, "i", IDLE);
+        } 
+       
         va_end(args);
     }
     return resultP;
