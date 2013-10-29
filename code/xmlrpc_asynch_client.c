@@ -1,5 +1,5 @@
 /* A simple asynchronous XML-RPC client written in C, as an example of
-   Xmlrpc-c asynchronous RPC facilities.  This is the same as the 
+   Xmlrpc-c asynchronous RPC facilities.  This is the same as the
    simpler synchronous client xmlprc_sample_add_client.c, except that
    it adds 3 different pairs of numbers with the summation RPCs going on
    simultaneously.
@@ -20,7 +20,7 @@
 #define NAME "Xmlrpc-c Asynchronous Test Client"
 #define VERSION "1.0"
 
-static void 
+static void
 die_if_fault_occurred(xmlrpc_env * const envP) {
     if (envP->fault_occurred) {
         fprintf(stderr, "Something failed. %s (XML-RPC fault code %d)\n",
@@ -29,7 +29,7 @@ die_if_fault_occurred(xmlrpc_env * const envP) {
     }
 }
 
-static void 
+static void
 handle_sample_status_response(const char *   const serverUrl,
                            const char *   const methodName,
                            xmlrpc_value * const paramArrayP,
@@ -39,19 +39,19 @@ handle_sample_status_response(const char *   const serverUrl,
 
     xmlrpc_env env;
     xmlrpc_int server_id;
-    
+
     /* Initialize our error environment variable */
     xmlrpc_env_init(&env);
 
     /* Our first four arguments provide helpful context.  Let's grab the
-       addends from our parameter array. 
+       addends from our parameter array.
     */
     xmlrpc_decompose_value(&env, paramArrayP, "(i)", &server_id);
     die_if_fault_occurred(&env);
 
     printf("RPC with method '%s' at URL '%s' and server id %d "
            "has completed\n", methodName, serverUrl, server_id);
-    
+
     if (faultP->fault_occurred)
         printf("The RPC failed.  %s\n", faultP->fault_string);
     else {
@@ -66,8 +66,8 @@ handle_sample_status_response(const char *   const serverUrl,
 
 
 
-int 
-main(int           const argc, 
+int
+main(int           const argc,
      const char ** const argv) {
 
     const char * const serverUrl = "http://localhost:8080/RPC2";
@@ -94,17 +94,20 @@ main(int           const argc,
     die_if_fault_occurred(&env);
 
 
-    printf("Making XMLRPC call to server url '%s' method '%s' "
-           "and server_id '%s'\n", serverUrl, methodName, server_id);
-
+    /* set server id */
     server_id = 1;
+
+    printf("Making XMLRPC call to server url '%s' method '%s' "
+           "and server_id '%d'\n", serverUrl, methodName, server_id);
+
+
     /* request the remote procedure call */
     xmlrpc_client_start_rpcf(&env, clientP, serverUrl, methodName,
                              handle_sample_status_response, NULL,
                              "(i)", server_id);
     die_if_fault_occurred(&env);
 
-    
+
     printf("RPCs all requested.  Waiting for & handling responses...\n");
 
     /* Wait for all RPCs to be done.  With some transports, this is also
