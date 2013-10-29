@@ -36,8 +36,10 @@ main(int           const argc,
     xmlrpc_env env;
     xmlrpc_value * resultP;
     xmlrpc_int32 status, server_id;
+    
     const char * const serverUrl = "http://localhost:8080/RPC2";
     const char * const methodName = "status";
+    const int semantic = 1;
 
     if (argc-1 > 0) {
         fprintf(stderr, "This program has no arguments\n");
@@ -58,14 +60,14 @@ main(int           const argc,
            "and server id is %d\n", serverUrl, methodName, server_id);
 
     /* Make the remote procedure call */
-    resultP = xmlrpc_client_call(&env, serverUrl, methodName,
+    resultP = xmlrpc_client_call(&env, serverUrl, semantic, methodName,
                                  "(i)", server_id);
     dieIfFaultOccurred(&env);
 
     /* Get our sum and print it out. */
     xmlrpc_read_int(&env, resultP, &status);
     dieIfFaultOccurred(&env);
-    printf("The status is %d\n", status);
+    printf("[CLIENT] The status is %d\n", status);
 
     /* Dispose of our result value. */
     xmlrpc_DECREF(resultP);

@@ -51,7 +51,7 @@ status(xmlrpc_env *   const envP,
     printf("The server_id is %d\n", server_id);
 
     status = 1;
-    printf("The status is %d\n", status);
+    printf("[SERVER] The status is %d\n", status);
 
     /* Return our result. */
     return xmlrpc_build_value(envP, "i", status);

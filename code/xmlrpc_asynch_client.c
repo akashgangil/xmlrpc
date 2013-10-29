@@ -72,6 +72,7 @@ main(int           const argc,
 
     const char * const serverUrl = "http://localhost:8080/RPC2";
     const char * const methodName = "status";
+    const int semantic = 1;
 
     xmlrpc_env env;
     xmlrpc_client * clientP;
@@ -102,7 +103,7 @@ main(int           const argc,
 
 
     /* request the remote procedure call */
-    xmlrpc_client_start_rpcf(&env, clientP, serverUrl, methodName,
+    xmlrpc_client_start_rpcf(&env, clientP, serverUrl, semantic, methodName,
                              handle_sample_status_response, NULL,
                              "(i)", server_id);
     die_if_fault_occurred(&env);
