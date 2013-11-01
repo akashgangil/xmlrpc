@@ -30,6 +30,19 @@
 #include "transport_config.h"
 #include "version.h"
 
+#define BUSY 0
+#define IDLE 1
+#define MOST_BUSY 2
+#define MOST_IDLE 3
+#define RPC_FAILURE 4
+
+#define ANY 0
+#define MAJORITY 1
+#define ALL 2
+
+int busy_ctr = 0;
+int idle_ctr = 0;
+
 struct xmlrpc_client {
 /*----------------------------------------------------------------------------
    This represents a client object.
@@ -970,6 +983,21 @@ asynchComplete(struct xmlrpc_call_info * const callInfoP,
             }
         }
     }
+
+    xmlrpc_int32 status, server_id;
+    xmlrpc_int32 semantic;
+    
+    xmlrpc_decompose_value(&env, resultP, "i", &status);
+    xmlrpc_decompose_value(&env, callInfoP->completionArgs.paramArrayP,
+                           "(ii)", &server_id, &semantic);
+
+    if (status == BUSY) { busy_ctr++; }
+    else if (status == IDLE) { idle_ctr++;}
+    
+    printf("[XMLRPC-LIB] The status is %d\n", status);
+    printf("[XMLRPC-LIB] Counters- idle: %d, busy: %d\n", idle_ctr, busy_ctr);
+    printf("[XMLRPC-LIB] The semantic is %d\n", semantic);
+    
     /* Call the user's completion function with the RPC result */
     (*callInfoP->completionFn)(callInfoP->completionArgs.serverUrl, 
                                callInfoP->completionArgs.methodName, 
@@ -1058,7 +1086,8 @@ xmlrpc_client_start_rpcf_server_va(
     void *                     const userHandle,
     const char *               const format,
     va_list                    args) {
-    
+
+    xmlrpc_int32 server_id, semantic;
     xmlrpc_value * paramArrayP;
         /* The XML-RPC parameter list array */
 
@@ -1069,6 +1098,8 @@ xmlrpc_client_start_rpcf_server_va(
     XMLRPC_ASSERT_PTR_OK(format);
 
     computeParamArray(envP, format, args, &paramArrayP);
+    xmlrpc_decompose_value(&envP, paramArrayP, "ii", &server_id, &semantic);
+    printf("[XMLRPC_LIB] The server_id %d and semantic is %d\n", server_id, semantic);
 
     if (!envP->fault_occurred) {
         xmlrpc_client_start_rpc(envP, clientP,

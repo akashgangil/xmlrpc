@@ -135,7 +135,7 @@ xmlrpc_client_transport_call(
 xmlrpc_value *
 xmlrpc_client_call(xmlrpc_env * const envP,
                    const char * const serverUrl,
-                   const int semantic,
+                   xmlrpc_int32 semantic,
                    const char * const methodName,
                    const char * const format,
                    ...) {
@@ -333,7 +333,6 @@ xmlrpc_client_call_server_asynch_params(
 }
 
 
-
 void
 xmlrpc_client_call_asynch(const char * const serverUrl,
                           const int semantic,
@@ -348,6 +347,8 @@ xmlrpc_client_call_asynch(const char * const serverUrl,
 
     validateGlobalClientExists(&env);
 
+    printf("[XMLRPC-LIB] The semantic is %d\n", semantic);
+    
     if (!env.fault_occurred) {
         va_list args;
 

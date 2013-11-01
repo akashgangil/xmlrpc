@@ -41,7 +41,7 @@ handle_status_response(const char *   const serverUrl,
     xmlrpc_value * const resultP) {
 
   xmlrpc_env env;
-  xmlrpc_int32 server_id, status;
+  xmlrpc_int32 server_id, status, semantic;
 
   /* Initialize our error environment variable */
   xmlrpc_env_init(&env);
@@ -67,7 +67,7 @@ main(int           const argc,
   xmlrpc_env env;
   xmlrpc_client * clientP;
   xmlrpc_int adder;
-  const int semantic = 1;
+  const int semantic = 2;
   xmlrpc_int32 server_id;
 
   if (argc-1 > 0) {
@@ -87,7 +87,7 @@ main(int           const argc,
 
   server_id = 1;
   xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
-                            NULL, "(i)", &server_id);
+                            NULL, "(ii)", server_id, semantic);
   die_if_fault_occurred(&env);
 
   printf("RPCs all requested.  Waiting for & handling responses...\n");

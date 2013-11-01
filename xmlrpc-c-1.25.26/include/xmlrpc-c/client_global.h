@@ -45,7 +45,7 @@ XMLRPC_DLLEXPORT
 xmlrpc_value * 
 xmlrpc_client_call(xmlrpc_env * const envP,
                    const char * const server_url,
-                   const int semantic,
+                   xmlrpc_int32 semantic,
                    const char * const method_name,
                    const char * const format,
                    ...);
@@ -98,7 +98,7 @@ xmlrpc_client_transport_call(
 XMLRPC_DLLEXPORT
 void 
 xmlrpc_client_call_asynch(const char * const server_url,
-                          const int semantic,
+                          xmlrpc_int32 semantic,
                           const char * const method_name,
                           xmlrpc_response_handler callback,
                           void *       const user_data,
