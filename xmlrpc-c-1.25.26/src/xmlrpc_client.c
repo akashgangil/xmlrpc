@@ -1098,7 +1098,7 @@ xmlrpc_client_start_rpcf_server_va(
     XMLRPC_ASSERT_PTR_OK(format);
 
     computeParamArray(envP, format, args, &paramArrayP);
-    xmlrpc_decompose_value(&envP, paramArrayP, "ii", &server_id, &semantic);
+    xmlrpc_decompose_value(&envP, paramArrayP, "(ii)", &server_id, &semantic);
     printf("[XMLRPC_LIB] The server_id %d and semantic is %d\n", server_id, semantic);
 
     if (!envP->fault_occurred) {
