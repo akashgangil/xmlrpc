@@ -1,1 +1,1 @@
-SRCDIR=/home/sathya/rpc/xmlrpc-c-1.25.26
+SRCDIR=/home/gangil/dev/xmlrpc/xmlrpc-c-1.25.26
