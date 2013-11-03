@@ -3,3 +3,8 @@ code/xmlrpc_sample_add_server
 code/xmlrpc_sample_add_client
 code/*.o
 rpc/
+xmlrpc-c-1.25.26/srcdir.mk
+xmlrpc-c-1.25.26/config.mk
+xmlrpc-c-1.25.26/xmlrpc_config.h
+xmlrpc-c-1.25.26/xmlrpc_amconfig.h
+
