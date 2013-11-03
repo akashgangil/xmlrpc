@@ -21,7 +21,7 @@ LDFLAGS += $(LADD)
 # If this were a real application, working from an installed copy of
 # Xmlrpc-c, XMLRPC_C_CONFIG would just be 'xmlrpc-c-config'.  It would be
 # found in the user's PATH.
-XMLRPC_C_CONFIG = $(HOME)/rpc/rpc/bin/xmlrpc-c-config
+XMLRPC_C_CONFIG = ../rpc/bin/xmlrpc-c-config
 
 CLIENTPROGS = \
   xmlrpc_sample_add_client \
