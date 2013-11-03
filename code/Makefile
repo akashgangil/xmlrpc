@@ -67,13 +67,13 @@ $(BLDDIR)/examples/cpp:
 	mkdir $@
 
 $(CLIENTPROGS):%:%.o
-	$(CCLD) -o $@ $^ $(LIBS_CLIENT) $(LDFLAGS)
+	$(CCLD) -o $@ $^ $(LIBS_CLIENT) $(LDFLAGS) -Wl,-rpath=../rpc/lib
 
 $(SERVERPROGS_CGI):%.cgi:%_cgi.o
 	$(CCLD) -o $@ $^ $(LIBS_SERVER_CGI) $(LDFLAGS)
 
 $(SERVERPROGS_ABYSS):%:%.o
-	$(CCLD) -o $@ $^ $(LIBS_SERVER_ABYSS) $(LDFLAGS)
+	$(CCLD) -o $@ $^ $(LIBS_SERVER_ABYSS) $(LDFLAGS) -Wl,-rpath=/home/gangil/dev/xmlrpc/rpc/lib
 
 $(BASIC_PROGS):%:%.o
 	$(CCLD) -o $@ $^ $(LIBS_BASE) $(LDFLAGS) 
@@ -113,6 +113,7 @@ install: $(PROGS)
 	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  if test -f $$p; then \
 	    echo "$(INSTCMD)"; $(INSTCMD); \
+
 	  else :; \
           fi; \
 	done
