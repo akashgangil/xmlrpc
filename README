@@ -1,11 +1,8 @@
 Set up:
-$ cd xmlrpc-c-1.25.26
-$ ./configure --prefix=../rpc
+$ make clean
 $ make
-$ make install
-$ cd ../code
-$ make
-$ export LD_LIBRARY_PATH=../rpc/lib
+
+
 
 If something breaks, change XMLRPC_C_CONFIG in your Makefile.
 
