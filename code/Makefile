@@ -73,7 +73,7 @@ $(SERVERPROGS_CGI):%.cgi:%_cgi.o
 	$(CCLD) -o $@ $^ $(LIBS_SERVER_CGI) $(LDFLAGS)
 
 $(SERVERPROGS_ABYSS):%:%.o
-	$(CCLD) -o $@ $^ $(LIBS_SERVER_ABYSS) $(LDFLAGS) -Wl,-rpath=/home/gangil/dev/xmlrpc/rpc/lib
+	$(CCLD) -o $@ $^ $(LIBS_SERVER_ABYSS) $(LDFLAGS) -Wl,-rpath=../rpc/lib
 
 $(BASIC_PROGS):%:%.o
 	$(CCLD) -o $@ $^ $(LIBS_BASE) $(LDFLAGS) 
@@ -90,7 +90,12 @@ $(OBJECTS):%.o:%.c
 # just remove these headers from the programs and hardcode whatever is
 # right for your build environment.
 
-$(OBJECTS): $(BLDDIR)/config.h $(BLDDIR)/xmlrpc_amconfig.h
+$(OBJECTS): config.h xmlrpc_amconfig.h
+
+config.h:
+	$(LN_S) $(BLDDIR)/xmlrpc_config.h $@
+xmlrpc_amconfig.h:
+	$(LN_S) $(BLDDIR)/$@ 
 
 .PHONY: clean
 clean:
