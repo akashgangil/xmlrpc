@@ -7,4 +7,7 @@ xmlrpc-c-1.25.26/srcdir.mk
 xmlrpc-c-1.25.26/config.mk
 xmlrpc-c-1.25.26/xmlrpc_config.h
 xmlrpc-c-1.25.26/xmlrpc_amconfig.h
+xmlrpc-c-1.25.26/config.status
+xmlrpc-c-1.25.26/config.log
+
 
