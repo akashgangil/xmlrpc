@@ -1146,17 +1146,13 @@ xmlrpc_client_start_rpcf(xmlrpc_env *    const envP,
                          xmlrpc_response_handler responseHandler,
                          void *          const userHandle,
                          const char *    const format,
-                         ...) {
-
-    va_list args;
+                         va_list 	 args) {
 
     XMLRPC_ASSERT_PTR_OK(format);
 
-    va_start(args, format);
     xmlrpc_client_start_rpcf_va(envP, clientP, serverUrl, methodName,
                                 responseHandler,
                                 userHandle, format, args);
-    va_end(args);
 }
 
 

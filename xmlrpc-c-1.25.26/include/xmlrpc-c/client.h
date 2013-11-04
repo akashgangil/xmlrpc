@@ -370,7 +370,7 @@ xmlrpc_client_start_rpcf(xmlrpc_env *    const envP,
                          xmlrpc_response_handler responseHandler,
                          void *          const userData,
                          const char *    const format,
-                         ...);
+                         va_list 	 args);
 
 XMLRPC_DLLEXPORT
 void
