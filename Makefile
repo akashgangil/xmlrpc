@@ -8,7 +8,7 @@ SHELL := /bin/bash
 
 subsystem:
 	cd $(XMLRPCSRCDIR) && $(MAKE)
-	$(shell cd xmlrpc-c-1.25.26 && make install)
+	make --directory=$(XMLRPCSRCDIR) install
 	cd $(EXAMPLESDIR) && $(MAKE)
 	$(CC) -o service $(UTILSDIR)/service.cpp
 clean:
