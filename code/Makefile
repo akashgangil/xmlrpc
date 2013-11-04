@@ -6,12 +6,12 @@
 
 
 ifeq ($(SRCDIR),)
-SRCDIR = $(CURDIR)
-BLDDIR = $(SRCDIR)
+SRCDIR = ../xmlrpc-c-1.25.26
+BLDDIR = ../xmlrpc-c-1.25.26
 endif
 SUBDIR = examples
 
-include config.mk
+include $(BLDDIR)/config.mk
 
 default: all
 
@@ -24,12 +24,12 @@ LDFLAGS += $(LADD)
 XMLRPC_C_CONFIG = ../rpc/bin/xmlrpc-c-config
 
 CLIENTPROGS = \
-  xmlrpc_sample_add_client \
+  xmlrpc_sync_client \
   xmlrpc_asynch_client \
 
 
 SERVERPROGS_ABYSS = \
-  xmlrpc_sample_add_server \
+  xmlrpc_server \
 
 # Build up PROGS:
 PROGS = 
@@ -90,7 +90,7 @@ $(OBJECTS):%.o:%.c
 # just remove these headers from the programs and hardcode whatever is
 # right for your build environment.
 
-$(OBJECTS): config.h xmlrpc_amconfig.h
+$(OBJECTS): $(BLDDIR)/config.h $(BLDDIR)/xmlrpc_amconfig.h
 
 .PHONY: clean
 clean:

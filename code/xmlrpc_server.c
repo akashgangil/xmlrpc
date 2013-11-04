@@ -34,7 +34,7 @@
 #include <xmlrpc-c/server.h>
 #include <xmlrpc-c/server_abyss.h>
 
-#include "config.h"  /* information about this build environment */
+#include "../xmlrpc-c-1.25.26/config.h"  /* information about this build environment */
 
 
 static xmlrpc_value *
