@@ -9,5 +9,7 @@ xmlrpc-c-1.25.26/xmlrpc_config.h
 xmlrpc-c-1.25.26/xmlrpc_amconfig.h
 xmlrpc-c-1.25.26/config.status
 xmlrpc-c-1.25.26/config.log
-
+xmlrpc-c-1.25.26/config.log
+xmlrpc-c-1.25.26/shell_config
+xmlrpc-c-1.25.26/xmlrpc-c-config.test
 
