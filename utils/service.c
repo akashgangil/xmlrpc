@@ -18,7 +18,8 @@ int main(int argc, char **argv) {
 
 	if(!strcmp(argv[2], "start")) {
 		printf("service start called\n");
-		for(size_t i = 0; i < num_servers ; ++i) {
+		size_t i = 0;
+		for(; i < num_servers ; ++i) {
 			printf("Hey   %d\n", server_port + i);
 		}	
 	}
