@@ -6,10 +6,10 @@ UTILSDIR = ./utils
 
 subsystem:
 	cd $(XMLRPCSRCDIR) && $(MAKE)
-	$(shell cd xmlrpc-c-1.25.26 && make install)
+	$(shell make_install.sh)
 	cd $(EXAMPLESDIR) && $(MAKE)
 	$(CC) -o service $(UTILSDIR)/service.cpp
 clean:
-	$(shell cd xmlrpc-c-1.25.26 && ./configure --prefix=$(PWD)/rpc && cd ..)
+	$(shell configure.sh)
 	make --directory=$(XMLRPCSRCDIR) clean
 	make --directory=$(EXAMPLESDIR) clean
