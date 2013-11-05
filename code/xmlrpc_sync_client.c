@@ -38,6 +38,11 @@ dieIfFaultOccurred (xmlrpc_env * const envP) {
 }
 
 
+int client_busy_ctr=0;
+int client_idle_ctr=0;
+int client_most_busy_ctr=0;
+int client_most_idle_ctr=0;
+int client_rpc_failure_ctr = 0;
 
 int
 main(int           const argc,
@@ -66,19 +71,27 @@ main(int           const argc,
     /* set the server id */
     server_id = 1;
 
-    printf("Making XMLRPC call to server url '%s' method '%s' "
-           "and server id is %d\n", serverUrl, methodName, server_id);
-
     /* Make the remote procedure call */
-    resultP = xmlrpc_client_call(&env, serverUrl, semantic, methodName,
-                                 "(ii)", server_id, semantic);
-    dieIfFaultOccurred(&env);
+    int i = 0;
 
-    /* Get our status and print it out. */
-    xmlrpc_read_int(&env, resultP, &status);
-    
+    for(i=0;i<1000;i++){
+      resultP = xmlrpc_client_call(&env, serverUrl, semantic, methodName,
+                                   "(iii)", server_id, semantic, server_id);
+      dieIfFaultOccurred(&env);
+      xmlrpc_read_int(&env, resultP, &status);
+
+      switch(status){
+      case BUSY: client_busy_ctr++; break;
+      case IDLE: client_idle_ctr++; break;
+      case MOST_BUSY: client_most_busy_ctr++; break;
+      case MOST_IDLE: client_most_idle_ctr++; break;
+      default: break;
+      }
+    }
+
+
     dieIfFaultOccurred(&env);
-    printf("[CLIENT] The status is %d\n", status);
+    printf("%d|%d|%d|%d|%d|async\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr);
 
     /* Dispose of our result value. */
     xmlrpc_DECREF(resultP);

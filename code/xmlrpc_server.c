@@ -44,9 +44,9 @@ status(xmlrpc_env *   const envP,
            void *         const channelInfo) {
 
     xmlrpc_int32 server_id, status, semantic;
-
+    int i;
     /* Parse our argument array. */
-    xmlrpc_decompose_value(envP, paramArrayP, "(ii)", &server_id, &semantic);
+    xmlrpc_decompose_value(envP, paramArrayP, "(iii)", &server_id, &semantic, &i);
     printf("[SERVER] The semantic is %d\n", semantic);
     if (envP->fault_occurred)
         return NULL;

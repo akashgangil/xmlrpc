@@ -23,6 +23,21 @@
 #define NAME "Xmlrpc-c Asynchronous Test Client"
 #define VERSION "1.0"
 
+#define BUSY 0
+#define IDLE 1
+#define MOST_BUSY 2
+#define MOST_IDLE 3
+#define RPC_FAILURE 4
+
+#define ANY 0
+#define MAJORITY 1
+#define ALL 2
+
+int client_busy_ctr=0;
+int client_idle_ctr=0;
+int client_most_busy_ctr=0;
+int client_most_idle_ctr=0;
+int client_rpc_failure_ctr = 0;
 static void
 die_if_fault_occurred(xmlrpc_env * const envP) {
   if (envP->fault_occurred) {
@@ -45,14 +60,21 @@ handle_status_response(const char *   const serverUrl,
 
   /* Initialize our error environment variable */
   xmlrpc_env_init(&env);
-  
+
   if (faultP->fault_occurred)
-    printf("The RPC failed.  %s\n", faultP->fault_string);
+    client_rpc_failure_ctr++;
   else {
     /* Get our sum and print it out. */
     xmlrpc_decompose_value(&env, resultP, "i", &status);
     die_if_fault_occurred(&env);
-    printf("The status is %d\n", status);
+
+    switch(status){
+    case BUSY: client_busy_ctr++; break;
+    case IDLE: client_idle_ctr++; break;
+    case MOST_BUSY: client_most_busy_ctr++; break;
+    case MOST_IDLE: client_most_idle_ctr++; break;
+    default: break;
+    }
   }
 
 }
@@ -86,19 +108,29 @@ main(int           const argc,
   die_if_fault_occurred(&env);
 
   server_id = 1;
-  xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
-                            NULL, "(ii)", server_id, semantic);
-  die_if_fault_occurred(&env);
 
-  printf("RPCs all requested.  Waiting for & handling responses...\n");
+  int i = 0;
+
+  for(i=0;i<120;i++) {
+    xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
+                              NULL, "(iii)", server_id, semantic, i);
+    die_if_fault_occurred(&env);
+  }
+
 
   /* Wait for all RPCs to be done.  With some transports, this is also
      what causes them to go.
    */
   xmlrpc_client_event_loop_finish_asynch();
 
+  int total, failures;
+  total = client_busy_ctr + client_idle_ctr + client_most_busy_ctr + client_most_idle_ctr + client_rpc_failure_ctr;
 
-  printf("All RPCs finished.\n");
+  if (total < 1000) {
+    client_rpc_failure_ctr = i-total;
+  }
+  
+  printf("%d|%d|%d|%d|%d|async\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr);
 
   xmlrpc_client_cleanup();
 

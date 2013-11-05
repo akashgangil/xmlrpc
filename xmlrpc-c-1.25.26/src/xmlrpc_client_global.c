@@ -165,8 +165,6 @@ xmlrpc_client_call(xmlrpc_env * const envP,
                                     methodName, format, &resultP, args);
 
             xmlrpc_read_int(envP, resultP, &status);
-            printf("[XMLRPC LIB] The status is %d\n", status);
-            printf("[XMLRPC LIB] The semantic is %d\n", semantic);
 
             switch(semantic) {
             case ANY: return resultP; break;
@@ -202,19 +200,15 @@ xmlrpc_client_call(xmlrpc_env * const envP,
 
         /* for ALL semantic, return correct status */
         if (busy_ctr == 2) {
-            printf("[XMLRPC LIB] The status is MOST_BUSY\n");
             return xmlrpc_build_value(envP, "i", MOST_BUSY);
         }
         else if (idle_ctr == 2) {
-            printf("[XMLRPC LIB] The status is MOST_IDLE\n");
             return xmlrpc_build_value(envP, "i", MOST_IDLE);
         }
         else if (busy_ctr == 3) {
-            printf("[XMLRPC LIB] The status is BUSY\n");
             return xmlrpc_build_value(envP, "i", BUSY);
         }
         else if (idle_ctr == 3) {
-            printf("[XMLRPC LIB]The status is IDLE\n");
             return xmlrpc_build_value(envP, "i", IDLE);
         }
 
@@ -346,18 +340,24 @@ xmlrpc_client_call_asynch(const char * const serverUrl,
     xmlrpc_env_init(&env);
 
     validateGlobalClientExists(&env);
-
-    printf("[XMLRPC-LIB] The semantic is %d\n", semantic);
     
     if (!env.fault_occurred) {
         va_list args;
 
         va_start(args, format);
 
-        xmlrpc_client_start_rpcf(&env, globalClientP,
-                                    serverUrl, methodName,
-                                    responseHandler, userData,
-                                    format, args);
+        const char * urls[3];
+        urls[0] = "http://localhost:8080/RPC2";
+        urls[1] = "http://localhost:8081/RPC2";
+        urls[2] = "http://localhost:8082/RPC2";
+        int i = 0;
+
+        for(i=0;i<3;i++){
+          xmlrpc_client_start_rpcf(&env, globalClientP,
+                                   urls[i], methodName,
+                                   responseHandler, userData,
+                                   format, args);
+        }
         va_end(args);
     }
     if (env.fault_occurred)
