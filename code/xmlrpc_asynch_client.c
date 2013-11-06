@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
@@ -43,6 +44,9 @@ int client_idle_ctr=0;
 int client_most_busy_ctr=0;
 int client_most_idle_ctr=0;
 int client_rpc_failure_ctr = 0;
+
+static pthread_mutex_t asynch_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 static void
 die_if_fault_occurred(xmlrpc_env * const envP) {
   if (envP->fault_occurred) {
@@ -63,6 +67,7 @@ handle_status_response(const char *   const serverUrl,
   xmlrpc_env env;
   xmlrpc_int32 server_id, status, semantic;
 
+  static num_responses = 0;
 
   /* Initialize our error environment variable */
   xmlrpc_env_init(&env);
@@ -83,6 +88,10 @@ handle_status_response(const char *   const serverUrl,
     }
   }
 
+  num_responses++;
+  if(num_responses == 120) {
+    pthread_mutex_unlock(&asynch_mutex);
+  }
 }
 
 int
@@ -97,6 +106,9 @@ main(int           const argc,
   xmlrpc_int adder;
   xmlrpc_int32 semantic = atoi(argv[1]);
   xmlrpc_int32 server_id;
+
+
+  pthread_mutex_lock(&asynch_mutex);
 
   /* Initialize our error environment variable */
   xmlrpc_env_init(&env);
@@ -120,14 +132,17 @@ main(int           const argc,
     xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
                               NULL, "(iii)", server_id, semantic, i);
     die_if_fault_occurred(&env);
+    
+    /* Wait for all RPCs to be done.  With some transports, this is also
+       what causes them to go.
+    */
+    xmlrpc_client_event_loop_finish_asynch();
   }
 
-  /* Wait for all RPCs to be done.  With some transports, this is also
-     what causes them to go.
-   */
-  xmlrpc_client_event_loop_finish_asynch();
+  pthread_mutex_lock(&asynch_mutex);
 
   stopwatch_stop(sw);   
+
   
   int total, failures;
   total = client_busy_ctr + client_idle_ctr + client_most_busy_ctr + client_most_idle_ctr + client_rpc_failure_ctr;
