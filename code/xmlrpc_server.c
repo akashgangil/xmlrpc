@@ -47,15 +47,11 @@ status(xmlrpc_env *   const envP,
     int i;
     /* Parse our argument array. */
     xmlrpc_decompose_value(envP, paramArrayP, "(iii)", &server_id, &semantic, &i);
-    printf("[SERVER] The semantic is %d\n", semantic);
     if (envP->fault_occurred)
         return NULL;
 
-    printf("The server_id is %d\n", server_id);
-
 
     status = (xmlrpc_int32) (rand() % 2);
-    printf("[SERVER] The status is %d\n", status);
 
     /* Return our result. */
     return xmlrpc_build_value(envP, "i", status);
@@ -99,7 +95,6 @@ main(int           const argc,
     serverparm.port_number      = atoi(argv[1]);
     serverparm.log_file_name    = "/tmp/xmlrpc_log";
 
-    printf("Running XML-RPC server...\n");
 
     xmlrpc_server_abyss(&env, &serverparm, XMLRPC_APSIZE(log_file_name));
 

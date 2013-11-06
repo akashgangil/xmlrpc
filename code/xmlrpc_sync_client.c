@@ -76,12 +76,7 @@ main(int           const argc,
 
     const char * const serverUrl = "http://localhost:8080/RPC2";
     const char * const methodName = "status";
-    xmlrpc_int32 semantic = ALL;
-
-    if (argc-1 > 0) {
-        fprintf(stderr, "This program has no arguments\n");
-        exit(1);
-    }
+    xmlrpc_int32 semantic = atoi(argv[1]);
 
     /* Initialize our error-handling environment. */
     xmlrpc_env_init(&env);
@@ -120,8 +115,12 @@ main(int           const argc,
 
 
     dieIfFaultOccurred(&env);
-    printf("%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(long double)3000000);
-
+    switch(semantic) {
+    case 0: printf("any|%d|%d|%d|%d|%d|sync\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr); break;
+    case 1: printf("majority|%d|%d|%d|%d|%d|sync\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr); break;
+    case 2: printf("all|%d|%d|%d|%d|%d|sync\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr); break;
+    default: printf("Use 0|1|2 as arguments"); break;
+    }
     /* Dispose of our result value. */
     xmlrpc_DECREF(resultP);
 

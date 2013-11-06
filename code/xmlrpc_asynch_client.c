@@ -74,6 +74,7 @@ handle_status_response(const char *   const serverUrl,
   xmlrpc_env env;
   xmlrpc_int32 server_id, status, semantic;
 
+
   /* Initialize our error environment variable */
   xmlrpc_env_init(&env);
 
@@ -105,13 +106,8 @@ main(int           const argc,
   xmlrpc_env env;
   xmlrpc_client * clientP;
   xmlrpc_int adder;
-  const int semantic = 2;
+  xmlrpc_int32 semantic = atoi(argv[1]);
   xmlrpc_int32 server_id;
-
-  if (argc-1 > 0) {
-    fprintf(stderr, "This program has no arguments\n");
-    exit(1);
-  }
 
   /* Initialize our error environment variable */
   xmlrpc_env_init(&env);
