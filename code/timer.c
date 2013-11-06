@@ -17,13 +17,6 @@
 
 #include <sys/time.h>
 
-struct stopwatch_t
-{
-  struct timeval t_start_;
-  struct timeval t_stop_;
-  int is_running_;
-};
-
 static
 long double
 elapsed (struct timeval start, struct timeval stop)

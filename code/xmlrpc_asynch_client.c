@@ -14,11 +14,13 @@
 #include <sys/time.h>
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/client.h>
 
 #include "config.h"  /* information about this build environment */
+#include "timer.h"
 
 #define NAME "Xmlrpc-c Asynchronous Test Client"
 #define VERSION "1.0"
@@ -32,6 +34,20 @@
 #define ANY 0
 #define MAJORITY 1
 #define ALL 2
+
+struct stopwatch_t
+{
+  struct timeval t_start_;
+  struct timeval t_stop_;
+  int is_running_;
+};
+
+struct stopwatch_t * stopwatch_create (void);
+void stopwatch_destroy (struct stopwatch_t* T);
+void stopwatch_init (void);
+void stopwatch_start (struct stopwatch_t* T);
+long double stopwatch_stop (struct stopwatch_t* T);
+long double stopwatch_elapsed (struct stopwatch_t* T);
 
 int client_busy_ctr=0;
 int client_idle_ctr=0;
@@ -111,18 +127,24 @@ main(int           const argc,
 
   int i = 0;
 
+  struct stopwatch_t* sw = stopwatch_create();
+  stopwatch_init();
+  stopwatch_start(sw);
+  
   for(i=0;i<120;i++) {
     xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
                               NULL, "(iii)", server_id, semantic, i);
     die_if_fault_occurred(&env);
   }
 
-
   /* Wait for all RPCs to be done.  With some transports, this is also
      what causes them to go.
    */
   xmlrpc_client_event_loop_finish_asynch();
 
+  stopwatch_stop(sw);   
+  stopwatch_destroy(sw);
+  
   int total, failures;
   total = client_busy_ctr + client_idle_ctr + client_most_busy_ctr + client_most_idle_ctr + client_rpc_failure_ctr;
 
@@ -130,7 +152,7 @@ main(int           const argc,
     client_rpc_failure_ctr = i-total;
   }
   
-  printf("%d|%d|%d|%d|%d|async\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr);
+  printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/360000);
 
   xmlrpc_client_cleanup();
 
@@ -138,3 +160,67 @@ main(int           const argc,
 
   return 0;
 }
+static long double elapsed (struct timeval start, struct timeval stop)
+{
+    return (long double)(stop.tv_sec - start.tv_sec)
+        + (long double)(stop.tv_usec - start.tv_usec)*1e-6;
+}
+
+long double stopwatch_elapsed (struct stopwatch_t* T)
+{
+    long double dt = 0;
+    if (T) {
+        if (T->is_running_) {
+            struct timeval stop;
+            gettimeofday (&stop, 0);
+            dt = elapsed (T->t_start_, stop);
+        } else {
+            dt = elapsed (T->t_start_, T->t_stop_);
+        }
+    }
+    return dt;
+}
+
+void stopwatch_init (void)
+{
+    fflush (stderr);
+}
+
+void stopwatch_start (struct stopwatch_t* T)
+{
+    assert (T);
+    T->is_running_ = 1;
+    gettimeofday (&(T->t_start_), 0);
+}
+
+long double stopwatch_stop (struct stopwatch_t* T)
+{
+    long double dt = 0;
+    if (T) {
+        if (T->is_running_) {
+            gettimeofday (&(T->t_stop_), 0);
+            T->is_running_ = 0;
+        }
+        dt = stopwatch_elapsed (T);
+    }
+    return dt;
+}
+
+
+struct stopwatch_t * stopwatch_create (void)
+{
+    struct stopwatch_t* new_timer =
+        (struct stopwatch_t *)malloc (sizeof (struct stopwatch_t));
+    if (new_timer)
+        memset (new_timer, 0, sizeof (struct stopwatch_t));
+    return new_timer;
+}
+
+void stopwatch_destroy (struct stopwatch_t* T)
+{
+    if (T) {
+        stopwatch_stop (T);
+        free (T);
+    }
+}
+
