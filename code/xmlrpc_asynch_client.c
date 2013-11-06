@@ -25,6 +25,8 @@
 #define MAJORITY 1
 #define ALL 2
 
+#define NUM_REQUESTS 1000
+#define NUM_SERVERS 3
 struct stopwatch_t
 {
   struct timeval t_start_;
@@ -98,6 +100,12 @@ int
 main(int           const argc,
     const char ** const argv) {
 
+  if(argc != 3) {
+    printf("Usage: ./xmlrpc_asynch_client <semantic> <number of requests>\n");
+    printf("Semantic Options: ANY 0, MAJORITY 1, ALL 2\n");
+    return 1;
+  }
+
   const char * const serverUrl = "http://localhost:8080/RPC2";
   const char * const methodName = "status";
 
@@ -128,7 +136,7 @@ main(int           const argc,
   stopwatch_init();
   stopwatch_start(sw);
   
-  for(i=0;i<1000;i++) {
+  for(i=0;i<NUM_REQUESTS;i++) {
     xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
                               NULL, "(iii)", server_id, semantic, i);
     die_if_fault_occurred(&env);
@@ -150,8 +158,17 @@ main(int           const argc,
   if (total < 1000) {
     client_rpc_failure_ctr = i-total;
   }
-  
-  printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000);
+  switch(semantic) {
+    case 0: 
+            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*NUM_REQUESTS));
+            break;
+    case 1:
+            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*NUM_REQUESTS));
+            break;
+    case 2:
+            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*NUM_REQUESTS));
+            break;
+  }
   
   stopwatch_destroy(sw);
 

@@ -25,6 +25,8 @@
 #define MAJORITY 1
 #define ALL 2
 
+#define NUM_REQUESTS 1000
+#define NUM_SERVERS 3
 #define TIMER_DESC "gettimeofday"
  
 struct stopwatch_t
@@ -61,6 +63,13 @@ int
 main(int           const argc,
         const char ** const argv) {
 
+    if(argc != 3) {
+      printf("Usage: ./xmlrpc_sync_client <semantic> <number of requests>\n");
+      printf("Semantic Options: ANY 0 MAJORITY 1 ALL 2\n");
+      return 1;
+    }
+
+
     xmlrpc_env env;
     xmlrpc_value * resultP;
     xmlrpc_int32 status, server_id;
@@ -86,7 +95,7 @@ main(int           const argc,
     stopwatch_init();
     stopwatch_start(sw);
 
-    for(i=0;i<1000;i++){
+    for(i=0;i<NUM_REQUESTS;i++){
         resultP = xmlrpc_client_call(&env, serverUrl, semantic, methodName,
                 "(iii)", server_id, semantic, server_id);
         dieIfFaultOccurred(&env);
@@ -103,11 +112,13 @@ main(int           const argc,
 
     stopwatch_stop(sw);   
 
+    long double avg_time = stopwatch_elapsed(sw)/(NUM_SERVERS*NUM_REQUESTS);
+
     dieIfFaultOccurred(&env);
     switch(semantic) {
-    case 0: printf("any|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000); break;
-    case 1: printf("majority|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000); break;
-    case 2: printf("all|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000); break;
+    case 0: printf("any|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, avg_time); break;
+    case 1: printf("majority|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, avg_time); break;
+    case 2: printf("all|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, avg_time); break;
     default: printf("Use 0|1|2 as arguments"); break;
     }
     
