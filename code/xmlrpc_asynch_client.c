@@ -128,7 +128,7 @@ main(int           const argc,
   stopwatch_init();
   stopwatch_start(sw);
   
-  for(i=0;i<120;i++) {
+  for(i=0;i<1000;i++) {
     xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
                               NULL, "(iii)", server_id, semantic, i);
     die_if_fault_occurred(&env);
@@ -151,7 +151,7 @@ main(int           const argc,
     client_rpc_failure_ctr = i-total;
   }
   
-  printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/360);
+  printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000);
   
   stopwatch_destroy(sw);
 
