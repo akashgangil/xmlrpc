@@ -137,7 +137,7 @@ main(int           const argc,
   stopwatch_start(sw);
   
   for(i=0;i<num_requests;i++) {
-    xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
+    xmlrpc_client_call_asynch(serverUrl, semantic, methodName,4, handle_status_response,
                               NULL, "(iii)", server_id, semantic, i);
     die_if_fault_occurred(&env);
     
@@ -158,16 +158,13 @@ main(int           const argc,
   if (total < 1000) {
     client_rpc_failure_ctr = i-total;
   }
+
+
   switch(semantic) {
-    case 0: 
-            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests));
-            break;
-    case 1:
-            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests));
-            break;
-    case 2:
-            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests));
-            break;
+    case 0: printf("any|%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests)); break;
+    case 1: printf("majority|%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests)); break;
+    case 2: printf("all|%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests)); break;
+    default: printf("Use 0|1|2 as arguments"); break;
   }
   
   stopwatch_destroy(sw);

@@ -1,11 +1,22 @@
 #!/usr/bin/env bash
 
 if [ "$1" = "start" ]; then
-  ./code/xmlrpc_server 8080 &
-  ./code/xmlrpc_server 8081 &
-  ./code/xmlrpc_server 8082 &
-fi
+    
+    if [ $# -ne 2 ]; then
+        echo "Usage: ./bin/service start <number of servers>"
+        exit
+    fi
 
-if [ "$1" = "stop" ]; then
-   kill `ps -e | grep xmlrpc | awk '{print $1}'`
+    if [ $2 > 0 ]
+    then
+        i=0
+        while(($i < $2))
+        do
+            x=$((8080+i))
+            ./code/xmlrpc_server "$x" &
+            i=$((i+1)) 
+        done
+    fi
+elif [ "$1" = "stop" ]; then
+  kill `ps -e | grep xmlrpc | awk '{print $1}'`
 fi
