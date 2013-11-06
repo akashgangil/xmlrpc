@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
-../code/xmlrpc_sync_client 0
-../code/xmlrpc_sync_client 1
-../code/xmlrpc_sync_client 2
+cd code
+./xmlrpc_sync_client 0
+./xmlrpc_asynch_client 0
+./xmlrpc_sync_client 1
+./xmlrpc_asynch_client 1
+./xmlrpc_sync_client 2
+./xmlrpc_asynch_client 2
