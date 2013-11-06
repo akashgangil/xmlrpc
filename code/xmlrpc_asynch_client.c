@@ -25,7 +25,6 @@
 #define MAJORITY 1
 #define ALL 2
 
-#define NUM_REQUESTS 1000
 #define NUM_SERVERS 3
 struct stopwatch_t
 {
@@ -113,6 +112,7 @@ main(int           const argc,
   xmlrpc_client * clientP;
   xmlrpc_int adder;
   xmlrpc_int32 semantic = atoi(argv[1]);
+  const int num_requests = atoi(argv[2]);
   xmlrpc_int32 server_id;
 
 
@@ -136,7 +136,7 @@ main(int           const argc,
   stopwatch_init();
   stopwatch_start(sw);
   
-  for(i=0;i<NUM_REQUESTS;i++) {
+  for(i=0;i<num_requests;i++) {
     xmlrpc_client_call_asynch(serverUrl, semantic, methodName, handle_status_response,
                               NULL, "(iii)", server_id, semantic, i);
     die_if_fault_occurred(&env);
@@ -160,13 +160,13 @@ main(int           const argc,
   }
   switch(semantic) {
     case 0: 
-            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*NUM_REQUESTS));
+            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests));
             break;
     case 1:
-            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*NUM_REQUESTS));
+            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests));
             break;
     case 2:
-            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*NUM_REQUESTS));
+            printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests));
             break;
   }
   

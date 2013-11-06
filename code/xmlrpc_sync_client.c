@@ -25,7 +25,6 @@
 #define MAJORITY 1
 #define ALL 2
 
-#define NUM_REQUESTS 1000
 #define NUM_SERVERS 3
 #define TIMER_DESC "gettimeofday"
  
@@ -76,7 +75,9 @@ main(int           const argc,
 
     const char * const serverUrl = "http://localhost:8080/RPC2";
     const char * const methodName = "status";
+    
     xmlrpc_int32 semantic = atoi(argv[1]);
+    const int num_requests = atoi(argv[2]);
 
     /* Initialize our error-handling environment. */
     xmlrpc_env_init(&env);
@@ -95,7 +96,7 @@ main(int           const argc,
     stopwatch_init();
     stopwatch_start(sw);
 
-    for(i=0;i<NUM_REQUESTS;i++){
+    for(i=0;i<num_requests;i++){
         resultP = xmlrpc_client_call(&env, serverUrl, semantic, methodName,
                 "(iii)", server_id, semantic, server_id);
         dieIfFaultOccurred(&env);
@@ -112,7 +113,7 @@ main(int           const argc,
 
     stopwatch_stop(sw);   
 
-    long double avg_time = stopwatch_elapsed(sw)/(NUM_SERVERS*NUM_REQUESTS);
+    long double avg_time = stopwatch_elapsed(sw)/(NUM_SERVERS*num_requests);
 
     dieIfFaultOccurred(&env);
     switch(semantic) {
