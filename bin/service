@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 if [ "$1" = "start" ]; then
-  ../code/xmlrpc_server 8080 &
-  ../code/xmlrpc_server 8081 &
-  ../code/xmlrpc_server 8082 &
+  ./code/xmlrpc_server 8080 &
+  ./code/xmlrpc_server 8081 &
+  ./code/xmlrpc_server 8082 &
 fi
 
 if [ "$1" = "stop" ]; then
