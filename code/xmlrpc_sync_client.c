@@ -1,12 +1,3 @@
-/* A simple synchronous XML-RPC client written in C, as an example of an
-   Xmlrpc-c client.  This invokes the sample.add procedure that the Xmlrpc-c
-   example xmlrpc_sample_add_server.c server provides.  I.e. it adds two
-   numbers together, the hard way.
-
-   This sends the RPC to the server running on the local system ("localhost"),
-   HTTP Port 8080.
-   */
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -111,16 +102,17 @@ main(int           const argc,
     }
 
     stopwatch_stop(sw);   
-    stopwatch_destroy(sw);
-
 
     dieIfFaultOccurred(&env);
     switch(semantic) {
-    case 0: printf("any|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000000); break;
-    case 1: printf("majority|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000000); break;
-    case 2: printf("all|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000000); break;
+    case 0: printf("any|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000); break;
+    case 1: printf("majority|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000); break;
+    case 2: printf("all|%d|%d|%d|%d|%d|sync|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/3000); break;
     default: printf("Use 0|1|2 as arguments"); break;
     }
+    
+    stopwatch_destroy(sw);
+    
     /* Dispose of our result value. */
     xmlrpc_DECREF(resultP);
 
@@ -135,8 +127,8 @@ main(int           const argc,
 
 static long double elapsed (struct timeval start, struct timeval stop)
 {
-    return (long double)(stop.tv_sec - start.tv_sec)
-        + (long double)(stop.tv_usec - start.tv_usec)*1e-6;
+    return (long double)(stop.tv_sec - start.tv_sec)*1e3
+        + (long double)(stop.tv_usec - start.tv_usec)*1e-3;
 }
 
 long double stopwatch_elapsed (struct stopwatch_t* T)
