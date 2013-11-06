@@ -1,14 +1,3 @@
-/* A simple asynchronous XML-RPC client written in C, as an example of
-   Xmlrpc-c asynchronous RPC facilities.  This is the same as the
-   simpler synchronous client xmlprc_sample_add_client.c, except that
-   it adds 3 different pairs of numbers with the summation RPCs going on
-   simultaneously.
-
-   Use this with xmlrpc_sample_add_server.  Note that that server
-   intentionally takes extra time to add 1 to anything, so you can see
-   our 5+1 RPC finish after our 5+0 and 5+2 RPCs.
- */
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -139,7 +128,6 @@ main(int           const argc,
   xmlrpc_client_event_loop_finish_asynch();
 
   stopwatch_stop(sw);   
-  stopwatch_destroy(sw);
   
   int total, failures;
   total = client_busy_ctr + client_idle_ctr + client_most_busy_ctr + client_most_idle_ctr + client_rpc_failure_ctr;
@@ -148,7 +136,9 @@ main(int           const argc,
     client_rpc_failure_ctr = i-total;
   }
   
-  printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/360000);
+  printf("%d|%d|%d|%d|%d|async|%Lg\n", client_busy_ctr, client_idle_ctr, client_most_busy_ctr, client_most_idle_ctr, client_rpc_failure_ctr, stopwatch_elapsed(sw)/360);
+  
+  stopwatch_destroy(sw);
 
   xmlrpc_client_cleanup();
 
@@ -158,8 +148,8 @@ main(int           const argc,
 }
 static long double elapsed (struct timeval start, struct timeval stop)
 {
-    return (long double)(stop.tv_sec - start.tv_sec)
-        + (long double)(stop.tv_usec - start.tv_usec)*1e-6;
+    return (long double)(stop.tv_sec - start.tv_sec)*1e3
+        + (long double)(stop.tv_usec - start.tv_usec)*1e-3;
 }
 
 long double stopwatch_elapsed (struct stopwatch_t* T)
