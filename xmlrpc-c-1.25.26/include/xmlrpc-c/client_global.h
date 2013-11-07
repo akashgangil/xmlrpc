@@ -47,6 +47,7 @@ xmlrpc_client_call(xmlrpc_env * const envP,
                    const char * const server_url,
                    xmlrpc_int32 semantic,
                    const char * const method_name,
+                   const int num_servers,
                    const char * const format,
                    ...);
 
@@ -100,6 +101,7 @@ void
 xmlrpc_client_call_asynch(const char * const server_url,
                           xmlrpc_int32 semantic,
                           const char * const method_name,
+                          const int num_servers,
                           xmlrpc_response_handler callback,
                           void *       const user_data,
                           const char * const format,

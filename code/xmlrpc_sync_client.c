@@ -97,7 +97,7 @@ main(int           const argc,
     stopwatch_start(sw);
 
     for(i=0;i<num_requests;i++){
-        resultP = xmlrpc_client_call(&env, serverUrl, semantic, methodName,11,
+        resultP = xmlrpc_client_call(&env, serverUrl, semantic, methodName,3,
                 "(iii)", server_id, semantic, server_id);
         dieIfFaultOccurred(&env);
         xmlrpc_read_int(&env, resultP, &status);

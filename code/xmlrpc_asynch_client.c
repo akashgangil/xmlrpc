@@ -137,7 +137,7 @@ main(int           const argc,
   stopwatch_start(sw);
   
   for(i=0;i<num_requests;i++) {
-    xmlrpc_client_call_asynch(serverUrl, semantic, methodName,4, handle_status_response,
+    xmlrpc_client_call_asynch(serverUrl, semantic, methodName,3, handle_status_response,
                               NULL, "(iii)", server_id, semantic, i);
     die_if_fault_occurred(&env);
     
