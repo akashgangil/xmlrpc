@@ -1,19 +1,14 @@
-Set up:
-$ make clean
-$ make
+INTRUCTIONS:
 
+Build the source:
+make clean
+make
 
+Run the servers:
+./bin/service start 3
 
-If something breaks, change XMLRPC_C_CONFIG in your Makefile.
+Run the clients:
+./bin/client 1000
 
-Run:
-Server - 
-$ ./xmlrpc_sample_add_server 8080 &
-$ ./xmlrpc_sample_add_server 8081 &
-$ ./xmlrpc_sample_add_server 8082 &
-
-Sync Client - 
-$ ./xmlrpc_sample_add_client
-
-Async Client -
-$ ./xmlrpc_asynch_client
+Stop the servers:
+./bin/service stop
