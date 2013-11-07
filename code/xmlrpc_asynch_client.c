@@ -90,7 +90,7 @@ handle_status_response(const char *   const serverUrl,
   }
 
   num_responses++;
-  if(num_responses == 120) {
+  if(num_responses == 1000) {
     pthread_mutex_unlock(&asynch_mutex);
   }
 }
