@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+cd code
 if [ "$1" = "start" ]; then
     
     if [ $# -ne 2 ]; then
@@ -13,7 +13,7 @@ if [ "$1" = "start" ]; then
         while(($i < $2))
         do
             x=$((8080+i))
-            ./code/xmlrpc_server "$x" &
+            ./xmlrpc_server "$x" &
             i=$((i+1)) 
         done
     fi
