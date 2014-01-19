@@ -1,3 +1,6 @@
+Basic MultiRPC implementation by modifying the xmlrpc library (http://xmlrpc-c.sourceforge.net/)
+
+
 INTRUCTIONS:
 
 Build the source:
